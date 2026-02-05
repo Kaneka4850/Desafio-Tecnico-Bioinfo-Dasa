@@ -1,0 +1,14 @@
+# Web Framework
+Flask==3.1.0
+Jinja2==3.1.5
+
+# API & Data
+requests==2.32.3
+
+# Produção
+gunicorn==23.0.0
+python-dotenv==1.0.1
+
+# Testes e Qualidade
+pytest==8.3.4
+pytest-mock==3.14.0

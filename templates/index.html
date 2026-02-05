@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASA | Analista de Bioinformática </title>
+    
+    <link rel="icon" href="{{ url_for('static', filename='images/DNA.jpg') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --dasa-blue: #004a99; 
+            --dasa-dark: #1a1a1a;
+            --bg-light: #f8f9fa;
+            --risk-high: #dc3545;
+            --risk-mid: #fd7e14;
+            --risk-low: #198754;
+            --neutral: #6c757d;
+        }
+        
+        body { 
+            background-color: var(--bg-light); 
+            font-family: 'Inter', sans-serif; 
+            color: var(--dasa-dark);
+        }
+
+        .navbar { 
+            background: linear-gradient(90deg, #004a99 0%, #003366 100%); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+
+        .search-container { margin-top: 60px; }
+
+        .card-search {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            background: white;
+        }
+
+        .card-result { 
+            border: none; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,74,153,0.08); 
+            overflow: hidden;
+            border-top: 5px solid var(--dasa-blue);
+        }
+
+        .btn-primary { 
+            background-color: var(--dasa-blue); 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background-color: #003366; transform: translateY(-1px); }
+
+        .result-label { 
+            color: #8898aa; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            font-size: 0.7rem; 
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .data-value { font-size: 1.1rem; font-weight: 500; color: var(--dasa-dark); }
+        
+        .badge-pill { padding: 8px 16px; border-radius: 50px; font-weight: 600; letter-spacing: 0.3px; }
+        .badge-gene { background-color: #e9ecef; color: var(--dasa-blue); border: 1px solid #dee2e6; }
+        
+        .rs-link { text-decoration: none; color: var(--dasa-blue); transition: color 0.2s; }
+        .rs-link:hover { color: #002a55; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark mb-5">
+    <div class="container">
+        <span class="navbar-brand h1 mb-0 fw-bold">Desafio Técnico - Analista de Bioinformática </span>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            
+            <div class="card card-search p-4 mb-4">
+                <h5 class="mb-4 text-center text-muted fw-bold">Consultar Base Genômica</h5>
+                <form method="POST">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted">🔍</span>
+                        <input type="text" class="form-control form-control-lg border-start-0 ps-0" name="rsid" 
+                               placeholder="Digite o rsID (ex: rs1815739)" 
+                               value="{{ query or '' }}" required style="box-shadow: none;">
+                        <button class="btn btn-primary" type="submit">Buscar Variante</button>
+                    </div>
+                </form>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} mt-3 mb-0 py-2 small fw-bold border-0 rounded-3 text-center shadow-sm">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </div>
+
+            {% if variant %}
+            <div class="card card-result p-0">
+                <div class="p-4 bg-white border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="result-label mb-1">VARIANTE</p>
+                        <h2 class="m-0 fw-bold text-primary">
+                            <a href="https://www.ensembl.org/Homo_sapiens/Variation/Explore?v={{ variant.rsid }}" 
+                               target="_blank" class="rs-link" title="Ver no Ensembl">
+                                 {{ variant.rsid }} 🔗
+                            </a>
+                        </h2>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-light text-dark border">GRCh38</span>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <div class="row g-4 mb-4">
+                        <div class="col-6 col-md-3">
+                            <p class="result-label">Cromossomo</p>
+                            <p class="data-value">Chr {{ variant.chromosome or '-' }}</p>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <p class="result-label">Posição</p>
+                            <p class="data-value">{{ variant.position or '-' }}</p>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <p class="result-label">Alelos</p>
+                            <p class="data-value text-primary">{{ variant.alleles }}</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <p class="result-label">MAF (Global)</p>
+                            <p class="data-value">{{ variant.minor_allele_freq or 'N/D' }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="opacity-10 my-4">
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <p class="result-label">Genes Afetados</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for gene in variant.genes %}
+                                    {% if gene == 'Intergenic' %}
+                                        <span class="badge rounded-pill bg-light text-muted border px-3 py-2">{{ gene }}</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill badge-gene px-3 py-2 fs-6">{{ gene }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p class="result-label">Consequência Funcional</p>
+                            {% set cons_lower = variant.consequence.lower() %}
+                            {% set cons_color = 'secondary' %}
+                            
+                            {% if 'stop' in cons_lower or 'frameshift' in cons_lower or 'splice' in cons_lower %}
+                                {% set cons_color = 'danger' %} 
+                            {% elif 'missense' in cons_lower %}
+                                {% set cons_color = 'warning text-dark' %} 
+                            {% elif 'synonymous' in cons_lower or 'intron' in cons_lower or 'intergenic' in cons_lower %}
+                                {% set cons_color = 'success' %} 
+                            {% endif %}
+                            
+                            <span class="badge bg-{{ cons_color }} badge-pill fs-6">
+                                {{ variant.consequence or 'N/A' }}
+                            </span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p class="result-label">Significância Clínica</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for clin in variant.clinical %}
+                                    {% set clin_lower = clin.lower() %}
+                                    {% set badge_color = 'secondary' %}
+                                    
+                                    {% if 'pathogenic' in clin_lower and 'conflict' not in clin_lower %}
+                                        {% set badge_color = 'danger' %}
+                                    {% elif 'benign' in clin_lower %}
+                                        {% set badge_color = 'success' %}
+                                    {% elif 'risk' in clin_lower or 'uncertain' in clin_lower or 'conflict' in clin_lower or 'drug' in clin_lower %}
+                                        {% set badge_color = 'warning text-dark' %}
+                                    {% else %}
+                                        {% set badge_color = 'secondary' %}
+                                    {% endif %}
+
+                                    <span class="badge bg-{{ badge_color }} badge-pill">
+                                        {{ clin }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
