@@ -1,2 +1,13 @@
-# Desafio Técnico - Analista de Bioinformática 
-Esse projeto é um buscador web de variantes utilizando como banco de dados o Ensembl, uma ferramenta de público que dentre diversas funcionalidades, possui o identificador de variantes humanas. 
+# Desafio Técnico - Analista de Bioinformática
+Este projeto é um protótipo funcional de uma aplicação web desenvolvida em **Python/Flask** para a consulta rápida de variantes genéticas humanas (rsIDs). A aplicação consome dados em tempo real da **Ensembl REST API**.
+
+**Versão Web:** [![AWS](https://img.shields.io/badge/AWS-Clique%20Aqui-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](http://100.48.103.67/)
+
+## Funcionalidades
+A aplicação atua como um buscador que padroniza e exibe informações críticas de variantes genéticas. Através de uma interface amigável, o usuário pode consultar:
+
+* **Identificação:** rsID e Alelos.
+* **Localização Genômica:** Cromossomo e posição exata.
+* **Anotação Biológica:** Genes afetados e consequência molecular.
+* **Frequência Populacional:** Minor Allele Frequency (MAF).
+* **Link Externo:** Redirecionamento direto para o portal do Ensembl para consulta detalhada.
