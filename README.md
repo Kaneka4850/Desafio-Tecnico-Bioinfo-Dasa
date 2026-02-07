@@ -15,41 +15,28 @@ A aplicação atua como um buscador que padroniza e exibe informações crítica
 ## Estrutura do projeto
 ```bash
 .
-├── app.py
-├── Dockerfile
-├── README.md
-├── requirements.txt
-├── test_services.py
-├── Variantes teste.tsv
-├── .gitattributes
-├── .gitignore
+│   .gitattributes
+│   .gitignore
+│   app.py
+│   Dockerfile
+│   README.md
+│   requirements.txt
+│   test_services.py
+│   Variantes teste.tsv
 │
-├── app/
-│   ├── __init__.py
-│   ├── routes.py
+├───app
+│   │   routes.py
+│   │   __init__.py
 │   │
-│   ├── services/
-│   │   ├── __init__.py
-│   │   └── ensembl_service.py
+│   ├───services
+│   │       ensembl_service.py
+│   │       __init__.py
 │   │
-│   ├── templates/
-│   │   └── index.html
+│   ├───static
+│   │   └───images
+│   │           DNA.jpg
 │   │
-│   └── static/
-│       └── images/
-│           └── DNA.jpg
+│   └───templates
+│           index.html
 │
-├── tests/
-│
-├── .vscode/
-│   └── settings.json
-│
-├── .pytest_cache/
-│   └── v/
-│       └── cache/
-│           ├── lastfailed
-│           ├── nodeids
-│           └── stepwise
-│
-└── __pycache__/
 ```
