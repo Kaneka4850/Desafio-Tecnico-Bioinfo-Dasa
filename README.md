@@ -11,3 +11,45 @@ A aplicação atua como um buscador que padroniza e exibe informações crítica
 * **Anotação Biológica:** Genes afetados e consequência molecular.
 * **Frequência Populacional:** Minor Allele Frequency (MAF).
 * **Link Externo:** Redirecionamento direto para o portal do Ensembl para consulta detalhada.
+
+## Estrutura do projeto
+```bash
+.
+├── app.py
+├── Dockerfile
+├── README.md
+├── requirements.txt
+├── test_services.py
+├── Variantes teste.tsv
+├── .gitattributes
+├── .gitignore
+│
+├── app/
+│   ├── __init__.py
+│   ├── routes.py
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── ensembl_service.py
+│   │
+│   ├── templates/
+│   │   └── index.html
+│   │
+│   └── static/
+│       └── images/
+│           └── DNA.jpg
+│
+├── tests/
+│
+├── .vscode/
+│   └── settings.json
+│
+├── .pytest_cache/
+│   └── v/
+│       └── cache/
+│           ├── lastfailed
+│           ├── nodeids
+│           └── stepwise
+│
+└── __pycache__/
+```
