@@ -60,3 +60,62 @@ Contém ativos como o favicon e imagens que compõem a identidade visual do busc
 app/templates
 ``
 Contém os arquivos HTML. Utiliza o motor Jinja2 para renderizar os dados das variantes dinamicamente na tela.
+
+## Preparação do ambiente e instalação de dependencias
+Para rodar o buscador, basta seguir o passo a passo. Lembrando que foi testado em uma máquina zerada, sem nenhuma dependencia nativa.
+### Passo 1: Preparação do sistema
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+### Passo 2: Instalação do Git e do Docker
+```bash
+sudo apt install git docker.io -y
+```
+
+### Passo 3: Configuração de Permissões
+```bash
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+```
+**OBS: Após executar esse comando, feche seu terminal linux e abra novamente**
+
+## Instalação do programa e navegação direta ao diretório correto
+
+### Passo 1: Clonando o projeto
+```bash
+git clone https://github.com/Kaneka4850/Desafio-Tecnico-Bioinfo-Dasa.git
+```
+### Passo 2: Entre na pasta
+
+```bash
+cd Desafio-Tecnico-Bioinfo-Dasa
+```
+
+### Passo 3: Contrução da imagem Docker
+```bash
+docker build -t bioinfo-dasa .
+```
+**OBS: Essa etapa pode demorar alguns minutos**
+
+## Colocando o buscador no Ar
+### Passo 1: Rodar o buscador
+```bash
+docker run -d -p 5000:5000 --name app-dasa bioinfo-dasa
+```
+### Passo 2: Copiar a localhost no seu navegador de preferencia
+```web
+http://localhost:5000
+```
+
+## Testes Unitários
+A aplicação conta com uma suíte de testes unitários que validam o consumo da API e o tratamento de dados.
+
+Para rodar os testes via Docker:
+```bash
+docker exec app-dasa pytest
+```
+**Resultado esperado: 4 passed. (Nota: Avisos de PytestCacheWarning podem ocorrer devido às permissões de escrita do container, não afetando a integridade dos testes).**
+
+
