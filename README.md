@@ -40,3 +40,23 @@ A aplicação atua como um buscador que padroniza e exibe informações crítica
 │           index.html
 │
 ```
+## Descrição dos diretórios
+`
+app/
+`
+Núcleo da aplicação. Centraliza a lógica de rotas e subpacotes.
+
+``
+app/services
+``
+Camada de serviço. Aqui reside a lógica que "conversa" com a API do Ensembl. Isolar essa lógica facilita a manutenção e testes sem depender da interface web.
+
+``
+app/static/images
+``
+Contém ativos como o favicon e imagens que compõem a identidade visual do buscador.
+
+``
+app/templates
+``
+Contém os arquivos HTML. Utiliza o motor Jinja2 para renderizar os dados das variantes dinamicamente na tela.
