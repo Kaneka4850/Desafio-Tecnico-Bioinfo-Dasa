@@ -120,4 +120,33 @@ docker exec app-dasa pytest
 ```
 **Resultado esperado: 4 passed. (Nota: Avisos de PytestCacheWarning podem ocorrer devido às permissões de escrita do container, não afetando a integridade dos testes).**
 
+# Exemplos de uso e vizualização do Json
+## Segue abaixo os resultados esperados do buscador de variantes, e a explicação de cada um.
+### Exemplo 1
+<img width="1897" height="909" alt="image" src="https://github.com/user-attachments/assets/9562ff31-52d1-4ea9-83bd-7e61e7bffe26" />
+Legenda: Resultado esperado do buscador, note que o MAF ao retornar vazio, ele retorna como N/D
+
+
+### Exemplo 2
+<img width="1919" height="209" alt="image" src="https://github.com/user-attachments/assets/1051bd40-a509-44d8-809c-ff96622cff51" />
+Legenda: Json retornado ao pesquisar a variante rs80357906
+
+### Exemplo 3
+<img width="1919" height="924" alt="image" src="https://github.com/user-attachments/assets/7b783b27-028d-416c-97f0-cc91bee65a89" />
+Legenda: O que aparece caso o usuario digitar algo que não seja uma variante
+
+### Exemplo 4
+<img width="1916" height="917" alt="image" src="https://github.com/user-attachments/assets/42c82426-13ff-4d8e-ac77-69a9784f59ba" />
+Legenda: O que aparece ao não digitar nada
+
+### Exemplo 5
+<img width="1918" height="913" alt="image" src="https://github.com/user-attachments/assets/1428d1d4-c584-49e4-ad00-f289472e3f1c" />
+Legenda: O que acontece caso seja digitado uma variante que não existe no banco de dados
+
+**OBS: Caso a API do Ensembl caia, esse erro também pode acontecer, entretanto para diferenciar, o programa ficará rodando por mum espaço de tempo maior e irá retornar esse erro**
+
+
+
+
+
 
