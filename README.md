@@ -3,7 +3,7 @@ Este projeto é um protótipo funcional de uma aplicação web desenvolvida em *
 
 [![AWS](https://img.shields.io/badge/Versão_Web-Clique%20Aqui-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](http://100.48.103.67/)
 
-[![YouTube](https://img.shields.io/badge/Vídeo_Demonstração-Clique_Aqui-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/nl5N8Gp53gE)
+[![YouTube](https://img.shields.io/badge/Vídeo_Demonstração-Clique_Aqui-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/T3RVMzBSX0I)
 
 ## Funcionalidades
 A aplicação atua como um buscador que padroniza e exibe informações críticas de variantes genéticas. Através de uma interface amigável, o usuário pode consultar:
