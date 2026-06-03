@@ -1,68 +1,74 @@
 import re
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, request, jsonify
 from app.services.ensembl_service import EnsemblService
+from app.services.gemini_service import GeminiService
+from app.services.omim_service import OmimService
+from app.services.cgi_service import CgiService
 
 main = Blueprint('main', __name__)
 
-def is_valid_rsid(rsid):
+def is_valid_variant(variant_id):
     """
-    Valida se o formato é estritamente 'rs' seguido de números.
-    Melhora a segurança e evita chamadas inúteis à API externa.
+    Valida se o formato é 'rs' seguido de números, ou notação HGVS.
+    Ex HGVS: NM_000546.5:c.215A>G
     """
-    # Usando raw string (r'') para evitar SyntaxWarning com \d
-    return bool(re.match(r'^rs\d+$', rsid))
+    variant_id = variant_id.strip()
+    is_rsid = bool(re.match(r'^rs\d+$', variant_id))
+    is_hgvs = bool(re.match(r'^[a-zA-Z0-9_.]+:[cgp]\..+$', variant_id))
+    return is_rsid or is_hgvs, is_rsid
 
-# --- ROTA DA INTERFACE (HTML) ---
-@main.route('/', methods=['GET', 'POST'])
-def index():
+@main.route('/api/variant/<path:variant_id>', methods=['GET'])
+def get_variant_json(variant_id):
     """
-    Rota para usuários humanos. Retorna HTML renderizado.
-    Atende ao requisito: "3. Interface Web"[cite: 29, 30].
+    Rota para buscar dados da variante no Ensembl, OMIM e CGI.
     """
-    variant_data = None
-    rsid_query = None
+    clean_id = variant_id.strip()
+    is_valid, is_rsid = is_valid_variant(clean_id)
 
-    if request.method == 'POST':
-        # Remove espaços em branco acidentais
-        rsid_query = request.form.get('rsid', '').strip()
-        
-        if rsid_query:
-            # Validação com Regex para segurança e performance
-            if is_valid_rsid(rsid_query):
-                variant_data = EnsemblService.get_variant_info(rsid_query)
-                
-                # Tratamento de erro se a variante não existir na API 
-                if not variant_data:
-                    flash(f"Variante {rsid_query} não encontrada na base do Ensembl.", "warning")
-            else:
-                flash(r"Formato inválido! O ID deve começar com 'rs' seguido de números (ex: rs1333049).", "danger")
-                variant_data = None 
-        else:
-            flash("Por favor, digite um rsID.", "info")
-
-    return render_template('index.html', variant=variant_data, query=rsid_query)
-
-# --- ROTA DA API (JSON) ---
-@main.route('/api/<rsid>', methods=['GET'])
-def get_variant_json(rsid):
-    """
-    Rota para máquinas/sistemas. Retorna JSON puro.
-    Atende ao requisito: "2. Backend... Retorne um JSON padronizado"[cite: 14, 17].
-    """
-    clean_rsid = rsid.strip()
-
-    if not is_valid_rsid(clean_rsid):
+    if not is_valid:
         return jsonify({
             "error": "Invalid format", 
-            "message": r"rsID must match format ^rs\d+$"
+            "message": "Variant ID must be an rsID (e.g. rs1333049) or HGVS notation (e.g. NM_000546.5:c.215A>G)"
         }), 400
 
-    data = EnsemblService.get_variant_info(clean_rsid)
+    # Busca no Ensembl
+    data = EnsemblService.get_variant_info(clean_id, is_rsid)
     
     if data:
+        # Integração OMIM e CGI (usando stubs no momento)
+        rsid_for_others = data.get("rsid", clean_id)
+        omim_data = OmimService.get_variant_data(rsid_for_others)
+        cgi_data = CgiService.get_variant_data(rsid_for_others)
+        
+        data["omim"] = omim_data
+        data["cgi"] = cgi_data
+        
         return jsonify(data), 200
     else:
         return jsonify({
             "error": "Variant not found", 
-            "rsid": clean_rsid
+            "variant_id": clean_id
         }), 404
+
+@main.route('/api/advanced-search', methods=['POST'])
+def advanced_search():
+    """
+    Rota que usa a API do Gemini para gerar insights clínicos baseados na variante.
+    """
+    data = request.json
+    api_key = data.get("api_key")
+    variant_data = data.get("variant_data")
+
+    if not api_key:
+        return jsonify({"error": "Gemini API Key is required"}), 400
+    
+    if not variant_data:
+        return jsonify({"error": "Variant data is required"}), 400
+
+    service = GeminiService(api_key)
+    insights = service.generate_clinical_insights(variant_data)
+
+    if insights:
+        return jsonify({"insights": insights}), 200
+    else:
+        return jsonify({"error": "Failed to generate insights"}), 500

@@ -1,17 +1,7 @@
 import requests
 import logging
 from typing import Dict, Any, Optional, List, Set
-from flask import Blueprint, jsonify # Blueprint é o padrão para organizar rotas
-
-# Definindo o Blueprint para as rotas (se estiver em um arquivo separado)
-main = Blueprint('main', __name__)
-
-@main.route('/debug/<rsid>')
-def debug_json(rsid):
-    service = EnsemblService()
-    # ✅ Corrigido para bater com o nome do método abaixo
-    variant_data = service.get_variant_info(rsid) 
-    return jsonify(variant_data)
+from flask import Blueprint, jsonify
 
 # Configuração de Logs
 logging.basicConfig(level=logging.INFO)
@@ -22,10 +12,12 @@ class EnsemblService:
     Serviço responsável pela comunicação com a API REST do Ensembl.
     """
     VARIATION_URL: str = "https://rest.ensembl.org/variation/human/"
+    HGVS_URL: str = "https://rest.ensembl.org/variation/human/hgvs/"
     VEP_URL: str = "https://rest.ensembl.org/vep/human/id/"
+    VEP_HGVS_URL: str = "https://rest.ensembl.org/vep/human/hgvs/"
 
     @staticmethod
-    def get_variant_info(rsid: str) -> Optional[Dict[str, Any]]:
+    def get_variant_info(variant_id: str, is_rsid: bool = True) -> Optional[Dict[str, Any]]:
         headers: Dict[str, str] = {
             "Content-Type": "application/json", 
             "User-Agent": "DasaChallenge-Bioinfo/1.0"
@@ -33,26 +25,30 @@ class EnsemblService:
         
         try:
             # 1. API VARIATION: Dados gerais e Clínicos
-            var_response = requests.get(
-                f"{EnsemblService.VARIATION_URL}{rsid}", 
-                headers=headers, 
-                timeout=5 
-            )
+            url = f"{EnsemblService.VARIATION_URL}{variant_id}" if is_rsid else f"{EnsemblService.HGVS_URL}{variant_id}"
+            var_response = requests.get(url, headers=headers, timeout=5)
             
             if var_response.status_code != 200:
-                logger.warning(f"Variante {rsid} não encontrada.")
+                logger.warning(f"Variante {variant_id} não encontrada.")
                 return None
 
             var_data: Dict[str, Any] = var_response.json()
 
+            # Para HGVS, as vezes a estrutura vem como array ou dict contendo a variante na chave. 
+            # A API HGVS pode retornar um dicionário ou lista, dependendo de como é chamada. 
+            # Em python request, se for dict e tiver chave com a variante, extrai os dados.
+            if not is_rsid and isinstance(var_data, list):
+                var_data = var_data[0]
+            elif not is_rsid and variant_id in var_data:
+                var_data = var_data[variant_id]
+
+            rsid_found = str(var_data.get("name", variant_id))
+
             # 2. API VEP: Busca o GENE correto
             gene_symbols: Set[str] = set()
             try:
-                vep_response = requests.get(
-                    f"{EnsemblService.VEP_URL}{rsid}", 
-                    headers=headers, 
-                    timeout=5
-                )
+                vep_url = f"{EnsemblService.VEP_URL}{rsid_found}" if rsid_found.startswith("rs") else f"{EnsemblService.VEP_HGVS_URL}{variant_id}"
+                vep_response = requests.get(vep_url, headers=headers, timeout=5)
                 if vep_response.status_code == 200:
                     for item in vep_response.json():
                         for transcript in item.get('transcript_consequences', []):
@@ -83,13 +79,14 @@ class EnsemblService:
             }
             clinical_clean = sorted(list(filtered)) if filtered else ["Não reportada"]
 
-            # ✅ MAF: Arredondamento e Chave Correta
+            # MAF: Arredondamento e Chave Correta
             raw_maf = var_data.get("MAF")
             final_maf = round(float(raw_maf), 4) if raw_maf is not None else None
 
             # 4. Retorno Estruturado
             return {
-                "rsid": str(var_data.get("name", rsid)),
+                "variant_id": variant_id,
+                "rsid": rsid_found,
                 "chromosome": str(main_mapping.get("seq_region_name", "N/A")),
                 "position": int(main_mapping.get("start", 0)),
                 "alleles": allele_str,
@@ -100,5 +97,5 @@ class EnsemblService:
             }
 
         except Exception as e:
-            logger.critical(f"ERRO CRÍTICO ao processar {rsid}: {e}", exc_info=True)
+            logger.critical(f"ERRO CRÍTICO ao processar {variant_id}: {e}", exc_info=True)
             return None

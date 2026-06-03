@@ -1,9 +1,11 @@
 # Web Framework
 Flask==3.1.0
 Jinja2==3.1.5
+flask-cors==4.0.0
 
 # API & Data
 requests==2.32.3
+google-genai==0.3.0
 
 # Produção
 gunicorn==23.0.0

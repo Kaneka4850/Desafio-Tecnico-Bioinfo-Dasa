@@ -1,152 +1,93 @@
-# Desafio Técnico - Analista de Bioinformática
-Este projeto é um protótipo funcional de uma aplicação web desenvolvida em **Python/Flask** para a consulta rápida de variantes genéticas humanas (rsIDs). A aplicação consome dados em tempo real da **Ensembl REST API**.
+<div align="center">
+  <img src="https://img.icons8.com/color/96/000000/dna-helix.png" alt="DNA Logo"/>
+  <h1>Buscador Avançado de Variantes Genéticas</h1>
+  <p><i>Análise Genômica Potencializada por Inteligência Artificial Integrada</i></p>
 
-[![AWS](https://img.shields.io/badge/Versão_Web-Clique%20Aqui-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](http://100.48.103.67/)
+  [![Python](https://img.shields.io/badge/Python-3.13-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+  [![React](https://img.shields.io/badge/React-Vite-61DAFB.svg?logo=react&logoColor=white)](https://reactjs.org/)
+  [![Flask](https://img.shields.io/badge/Flask-API-black.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+  [![Gemini](https://img.shields.io/badge/Google_Gemini-AI_Insights-orange.svg?logo=google&logoColor=white)](https://aistudio.google.com/)
 
-[![YouTube](https://img.shields.io/badge/Vídeo_Demonstração-Clique_Aqui-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/T3RVMzBSX0I)
+</div>
 
-## Funcionalidades
-A aplicação atua como um buscador que padroniza e exibe informações críticas de variantes genéticas. Através de uma interface amigável, o usuário pode consultar:
+<hr/>
 
-* **Identificação:** rsID e Alelos.
-* **Localização Genômica:** Cromossomo e posição exata.
-* **Anotação Biológica:** Genes afetados e consequência molecular.
-* **Frequência Populacional:** Minor Allele Frequency (MAF).
-* **Link Externo:** Redirecionamento direto para o portal do Ensembl para consulta detalhada.
+## 🧬 Sobre o Projeto
+Este é um protótipo robusto de **Bioinformática e Engenharia de Software**. O que antes era uma interface HTML básica evoluiu para uma aplicação *full-stack* completa, onde o **Backend em Flask** atua como uma API REST poderosa e o **Frontend em React** garante uma experiência de usuário visualmente moderna e responsiva (Glassmorphism, Tailwind/CSS focado em azul e branco).
 
-## Estrutura do projeto
+O grande diferencial deste projeto é a integração direta com **Inteligência Artificial (Google Gemini)** para a geração dinâmica de insights clínicos com base em grandes bancos de dados de literatura médica.
+
+## ✨ Funcionalidades Principais
+
+* 🔍 **Suporte Expandido a Nomenclaturas**: Consulta direta de variantes não apenas por **rsID** (`rs1333049`), mas também via **HGVS** (`NM_000546.5:c.215A>G`).
+* 🧠 **Integração IA (Gemini)**: "Busca Avançada" que ativa um agente clínico alimentado pelo Google Gemini 1.5/2.5. O modelo correlaciona achados de bancos de dados da literatura (PubMed, NCBI, OncoKB, Scielo) para gerar **Hipóteses Diagnósticas** e recomendar os **Exames Comprobatórios** apropriados.
+* 🌐 **Ecossistema de APIs Genômicas**:
+  * Consumo central da **Ensembl REST API** para dados básicos, alelos e frequências (MAF).
+  * Arquitetura base implementada para **OMIM** (Online Mendelian Inheritance in Man) e **CGI** (Cancer Genome Interpreter).
+* 🎨 **Design System Premium**: Frontend refeito do zero, abandonando Jinja2 em prol do React + Vite, apresentando componentes modulares, carregamentos assíncronos dinâmicos e UI polida.
+
+## 🛠 Arquitetura do Sistema
+
 ```bash
 .
-│   .gitattributes
-│   .gitignore
-│   app.py
-│   Dockerfile
-│   README.md
-│   requirements.txt
-│   test_services.py
-│   Variantes teste.tsv
+├── backend/                  # (Diretório Root)
+│   ├── app/                  # Lógica Central Flask
+│   │   ├── routes.py         # Roteamento e unificação da API (REST)
+│   │   └── services/         # Handlers de Integração (Ensembl, Gemini, OMIM, CGI)
+│   ├── app.py                # Ponto de entrada do Backend
+│   └── requirements.txt      # Dependências (google-genai, flask-cors, etc)
 │
-├───app
-│   │   routes.py
-│   │   __init__.py
-│   │
-│   ├───services
-│   │       ensembl_service.py
-│   │       __init__.py
-│   │
-│   ├───static
-│   │   └───images
-│   │           DNA.jpg
-│   │
-│   └───templates
-│           index.html
-│
-```
-## Descrição dos diretórios
-`
-app/
-`
-Núcleo da aplicação. Centraliza a lógica de rotas e subpacotes.
-
-``
-app/services
-``
-Camada de serviço. Aqui reside a lógica que "conversa" com a API do Ensembl. Isolar essa lógica facilita a manutenção e testes sem depender da interface web.
-
-``
-app/static/images
-``
-Contém ativos como o favicon e imagens que compõem a identidade visual do buscador.
-
-``
-app/templates
-``
-Contém os arquivos HTML. Utiliza o motor Jinja2 para renderizar os dados das variantes dinamicamente na tela.
-
-## Preparação do ambiente e instalação de dependencias
-Para rodar o buscador, basta seguir o passo a passo. Lembrando que foi testado em uma máquina zerada, sem nenhuma dependencia nativa.
-### Passo 1: Preparação do sistema
-```bash
-sudo apt update && sudo apt upgrade -y
+└── frontend/                 # Ponto de entrada do Frontend React (Vite)
+    ├── src/
+    │   ├── components/       # Componentes Inteligentes (SearchBar, ClinicalDashboard)
+    │   ├── App.jsx           # Componente Root
+    │   └── index.css         # UI Design System
+    └── package.json
 ```
 
-### Passo 2: Instalação do Git e do Docker
-```bash
-sudo apt install git docker.io -y
-```
+## 🚀 Como Executar Localmente
 
-### Passo 3: Configuração de Permissões
-```bash
-sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker $USER
-```
-**OBS: Após executar esse comando, feche seu terminal linux e abra novamente**
-
-## Instalação do programa e navegação direta ao diretório correto
-
-### Passo 1: Clonando o projeto
+### 1. Preparação do Ambiente
+Faça o clone do repositório:
 ```bash
 git clone https://github.com/Kaneka4850/Desafio-Tecnico-Bioinfo-Dasa.git
-```
-### Passo 2: Entre na pasta
-
-```bash
 cd Desafio-Tecnico-Bioinfo-Dasa
 ```
 
-### Passo 3: Contrução da imagem Docker
+### 2. Rodando o Backend (Flask / API)
+Em um terminal, configure seu ambiente Python e rode:
 ```bash
-docker build -t bioinfo-dasa .
+# Recomendado usar um virtualenv
+pip install -r requirements.txt
+python app.py
 ```
-**OBS: Essa etapa pode demorar alguns minutos**
+*A API estará ouvindo na porta **5000**.*
 
-## Colocando o buscador no Ar
-### Passo 1: Rodar o buscador
+### 3. Rodando o Frontend (React / UI)
+Em outro terminal, acesse a pasta do frontend e instale as dependências Node:
 ```bash
-docker run -d -p 5000:5000 --name app-dasa bioinfo-dasa
+cd frontend
+npm install
+npm run dev
 ```
-### Passo 2: Copiar a localhost no seu navegador de preferencia
-```web
-http://localhost:5000
-```
+*O sistema abrirá automaticamente em seu navegador, normalmente em `http://localhost:5173/`.*
 
-## Testes Unitários
-A aplicação conta com uma suíte de testes unitários que validam o consumo da API e o tratamento de dados.
+## 🧪 Como Testar a IA
 
-Para rodar os testes via Docker:
+1. Na tela principal, ative a opção **"Ativar Busca Avançada com IA"**.
+2. Cole sua `API_KEY` do **Google AI Studio**.
+3. Faça a busca por uma variante patogênica famosa, como **`rs80357906`** (ligada ao gene BRCA1).
+4. O sistema processará os dados via Ensembl e repassará a bio-assinatura ao Gemini, que renderizará instantaneamente as correlações com a literatura, hipóteses e protocolos médicos!
+
+## 🛡 Testes e Qualidade
+
+O backend conta com cobertura em testes unitários. Para executá-los, utilize o `pytest` no diretório raiz:
 ```bash
-docker exec app-dasa pytest
+pytest test_services.py
 ```
-**Resultado esperado: 4 passed. (Nota: Avisos de PytestCacheWarning podem ocorrer devido às permissões de escrita do container, não afetando a integridade dos testes).**
 
-# Exemplos de uso e vizualização do Json
-## Segue abaixo os resultados esperados do buscador de variantes, e a explicação de cada um.
-### Exemplo 1
-<img width="1897" height="909" alt="image" src="https://github.com/user-attachments/assets/9562ff31-52d1-4ea9-83bd-7e61e7bffe26" />
-Legenda: Resultado esperado do buscador, note que o MAF ao retornar vazio, ele retorna como N/D
+<hr/>
 
-
-### Exemplo 2
-<img width="1919" height="209" alt="image" src="https://github.com/user-attachments/assets/1051bd40-a509-44d8-809c-ff96622cff51" />
-Legenda: Json retornado ao pesquisar a variante rs80357906
-
-### Exemplo 3
-<img width="1919" height="924" alt="image" src="https://github.com/user-attachments/assets/7b783b27-028d-416c-97f0-cc91bee65a89" />
-Legenda: O que aparece caso o usuario digitar algo que não seja uma variante
-
-### Exemplo 4
-<img width="1916" height="917" alt="image" src="https://github.com/user-attachments/assets/42c82426-13ff-4d8e-ac77-69a9784f59ba" />
-Legenda: O que aparece ao não digitar nada
-
-### Exemplo 5
-<img width="1918" height="913" alt="image" src="https://github.com/user-attachments/assets/1428d1d4-c584-49e4-ad00-f289472e3f1c" />
-Legenda: O que acontece caso seja digitado uma variante que não existe no banco de dados
-
-**OBS: Caso a API do Ensembl caia, esse erro também pode acontecer, entretanto para diferenciar, o programa ficará rodando por mum espaço de tempo maior e irá retornar esse erro**
-
-
-
-
-
-
+<div align="center">
+  <p>Desenvolvido para demonstração de capacidade técnica Full-Stack e integração AI na área de Genômica de Precisão.</p>
+</div>
