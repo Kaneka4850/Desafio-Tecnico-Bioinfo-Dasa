@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Search, Sparkles } from 'lucide-react';
 
-const SearchBar = ({ onSearch, loading }) => {
+const SearchBar = ({ onSearch, loading, savedApiKey }) => {
   const [query, setQuery] = useState('');
   const [useGemini, setUseGemini] = useState(false);
-  const [apiKey, setApiKey] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch(query, useGemini, apiKey);
+      onSearch(query, useGemini, savedApiKey);
     }
   };
 
@@ -37,17 +36,17 @@ const SearchBar = ({ onSearch, loading }) => {
           </span>
         </div>
 
-        {useGemini && (
-          <div className="input-group" style={{ marginTop: '1rem', animation: 'fadeIn 0.3s' }}>
-            <label htmlFor="api-key">Gemini API Key</label>
-            <input
-              id="api-key"
-              type="password"
-              placeholder="Insira sua chave da API do Google Gemini..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              disabled={loading}
-            />
+        {useGemini && !savedApiKey && (
+          <div style={{ 
+            backgroundColor: '#fff3cd', 
+            color: '#856404', 
+            padding: '0.75rem 1rem', 
+            borderRadius: '8px', 
+            marginBottom: '1rem',
+            border: '1px solid #ffeeba',
+            fontSize: '0.9rem'
+          }}>
+            ⚠️ Configure sua API Key clicando no botão <strong>"Configurar API Key"</strong> acima.
           </div>
         )}
 
@@ -69,3 +68,4 @@ const SearchBar = ({ onSearch, loading }) => {
 };
 
 export default SearchBar;
+

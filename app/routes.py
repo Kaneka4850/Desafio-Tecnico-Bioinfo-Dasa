@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from app.services.ensembl_service import EnsemblService
 from app.services.gemini_service import GeminiService
@@ -72,3 +73,96 @@ def advanced_search():
         return jsonify({"insights": insights}), 200
     else:
         return jsonify({"error": "Failed to generate insights"}), 500
+
+@main.route('/api/vcf-upload', methods=['POST'])
+def vcf_upload():
+    """
+    Rota para receber upload de arquivo VCF, extrair as variantes (limitadas a 50) e 
+    consultar o Ensembl VEP usando o genoma de referência hg19 (GRCh37).
+    """
+    if 'file' not in request.files:
+        return jsonify({"error": "Nenhum arquivo enviado"}), 400
+        
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "Nenhum arquivo selecionado"}), 400
+        
+    if not (file.filename.endswith('.vcf') or file.filename.endswith('.gvcf')):
+        return jsonify({"error": "O arquivo não é um VCF válido. Por favor envie um arquivo com extensão .vcf ou .gvcf."}), 400
+
+    try:
+        content = file.read().decode('utf-8')
+        lines = content.splitlines()
+        
+        variants = []
+        for line in lines:
+            if line.startswith('#'):
+                continue
+            parts = line.strip().split('\t')
+            # VCF format: CHROM POS ID REF ALT QUAL FILTER INFO
+            if len(parts) >= 5:
+                chrom = parts[0]
+                pos = parts[1]
+                var_id = parts[2]
+                ref = parts[3]
+                alt_alleles = parts[4].split(',')
+                
+                # Ignorar chromossomos não padrão para simplificar ou processar o primeiro alt
+                for alt in alt_alleles:
+                    # Ensembl VEP format: [chr] [start] [end] [allele1/allele2] [strand]
+                    # Format for POST region is typically just space separated
+                    # Also handles VCF format if string looks like VCF
+                    vcf_line = f"{chrom}\t{pos}\t{var_id}\t{ref}\t{alt}\t.\t.\t."
+                    variants.append(vcf_line)
+                    
+                    if len(variants) >= 50:
+                        break
+            if len(variants) >= 50:
+                break
+                
+        if not variants:
+            return jsonify({"error": "Nenhuma variante encontrada no arquivo."}), 400
+            
+        results = EnsemblService.process_vcf_variants(variants)
+        return jsonify({"variants": results, "filename": file.filename}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Erro ao processar o arquivo: {str(e)}"}), 500
+
+@main.route('/api/generate-report', methods=['POST'])
+def generate_report():
+    """
+    Rota que gera um laudo clínico simulado com base nas variantes de um VCF.
+    Filtra apenas variantes Patogênicas, Provavelmente Patogênicas e VUS para economizar tokens.
+    """
+    data = request.json
+    api_key = data.get("api_key")
+    variants_data = data.get("variants_data")
+    filename = data.get("filename", "Arquivo desconhecido")
+
+    if not api_key:
+        return jsonify({"error": "Gemini API Key is required"}), 400
+    
+    if not variants_data:
+        return jsonify({"error": "Variants data is required"}), 400
+
+    # Filtrar apenas variantes clinicamente relevantes para economizar tokens
+    relevant_keywords = ['pathogenic', 'likely pathogenic', 'uncertain', 'vus', 'conflicting']
+    filtered_variants = []
+    for v in variants_data:
+        clin = ' '.join(v.get('clinical', [])).lower()
+        if any(kw in clin for kw in relevant_keywords):
+            filtered_variants.append(v)
+    
+    if not filtered_variants:
+        return jsonify({"error": "Nenhuma variante Patogênica, Provavelmente Patogênica ou VUS encontrada para gerar o laudo."}), 400
+
+    report_date = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    service = GeminiService(api_key)
+    report = service.generate_clinical_report(filtered_variants, filename, report_date)
+
+    if report:
+        return jsonify({"report": report, "report_date": report_date, "filename": filename}), 200
+    else:
+        return jsonify({"error": "Failed to generate report"}), 500
