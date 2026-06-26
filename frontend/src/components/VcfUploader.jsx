@@ -29,25 +29,25 @@ const VcfUploader = ({ onUpload, loading }) => {
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
       <h3>Upload de Arquivo VCF</h3>
-      <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem' }}>
+      <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem' }}>
         Envie um arquivo .vcf ou .gvcf filtrado para análise em lote (limitado às primeiras 50 variantes).
       </p>
 
       <div 
         onClick={!loading ? handleClick : undefined}
         style={{
-          border: '2px dashed var(--border-color)',
-          borderRadius: 'var(--radius)',
+          border: '2px dashed var(--color-border)',
+          borderRadius: 'var(--radius-lg)',
           padding: '3rem',
           textAlign: 'center',
           cursor: loading ? 'not-allowed' : 'pointer',
-          backgroundColor: 'var(--background-color)',
+          backgroundColor: 'var(--color-bg)',
           transition: 'all 0.3s ease',
         }}
-        onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = 'var(--primary-color)')}
-        onMouseLeave={(e) => !loading && (e.currentTarget.style.borderColor = 'var(--border-color)')}
+        onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = 'var(--color-primary)')}
+        onMouseLeave={(e) => !loading && (e.currentTarget.style.borderColor = 'var(--color-border)')}
       >
-        <Upload size={48} color="var(--primary-color)" style={{ marginBottom: '1rem' }} />
+        <Upload size={48} color="var(--color-primary)" style={{ marginBottom: '1rem' }} />
         <h4>{loading ? 'Processando arquivo...' : 'Clique para selecionar um arquivo VCF'}</h4>
         
         <input 

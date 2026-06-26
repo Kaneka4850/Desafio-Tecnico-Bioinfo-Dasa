@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SearchBar from './components/SearchBar';
 import ClinicalDashboard from './components/ClinicalDashboard';
@@ -7,12 +7,27 @@ import VcfUploader from './components/VcfUploader';
 import VcfDashboard from './components/VcfDashboard';
 import AiClinicalReport from './components/AiClinicalReport';
 import ApiKeyConfig from './components/ApiKeyConfig';
-import { Activity } from 'lucide-react';
+import { Dna, Sun, Moon, AlertTriangle, Key } from 'lucide-react';
 import './index.css';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
 function App() {
+  // --- Theme ---
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  // --- State ---
   const [variantData, setVariantData] = useState(null);
   const [vcfVariants, setVcfVariants] = useState([]);
   const [vcfFilename, setVcfFilename] = useState("");
@@ -26,7 +41,9 @@ function App() {
   const [loadingReport, setLoadingReport] = useState(false);
   
   const [geminiApiKey, setGeminiApiKey] = useState("");
+  const [showApiModal, setShowApiModal] = useState(false);
 
+  // --- Handlers ---
   const handleSearch = async (query, useGemini, apiKey) => {
     setLoading(true);
     setError(null);
@@ -46,9 +63,9 @@ function App() {
         fetchInsights(data, apiKey || geminiApiKey);
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         setError(err.response.data.message);
-      } else if (err.response && err.response.status === 404) {
+      } else if (err.response?.status === 404) {
         setError("Variante não encontrada no banco de dados.");
       } else {
         setError("Erro de comunicação com o servidor.");
@@ -87,14 +104,12 @@ function App() {
 
     try {
       const response = await axios.post(`${API_BASE_URL}/vcf-upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       setVcfVariants(response.data.variants);
       setVcfFilename(response.data.filename || file.name);
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
         setError("Erro de comunicação com o servidor ao enviar VCF.");
@@ -106,13 +121,10 @@ function App() {
 
   const handleGenerateReport = async () => {
     if (!geminiApiKey) {
-      const key = prompt("Por favor, insira sua chave da API do Gemini para gerar o laudo:");
-      if (!key) return;
-      setGeminiApiKey(key);
-      generateReport(key);
-    } else {
-      generateReport(geminiApiKey);
+      setShowApiModal(true);
+      return;
     }
+    generateReport(geminiApiKey);
   };
 
   const generateReport = async (apiKey) => {
@@ -127,7 +139,7 @@ function App() {
       setReport(response.data.report);
     } catch (err) {
       console.error("Erro ao gerar laudo", err);
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err.response?.data?.error) {
         setError(`Erro ao gerar laudo: ${err.response.data.error}`);
       } else {
         setError("Erro ao se comunicar com a IA para gerar o laudo.");
@@ -137,48 +149,109 @@ function App() {
     }
   };
 
+  const handleApiKeySave = (key) => {
+    setGeminiApiKey(key);
+    setShowApiModal(false);
+    // If there are pending VCF variants and user just configured key, generate report
+    if (vcfVariants.length > 0 && key) {
+      generateReport(key);
+    }
+  };
+
   return (
-    <div className="container">
-      <header>
-        <Activity size={48} color="var(--primary-color)" style={{ marginBottom: '1rem' }} />
-        <h1>Buscador de Variantes Genéticas</h1>
-        <p>Busque por rsID, nomenclatura HGVS ou envie um arquivo VCF. Habilite a IA para insights clínicos.</p>
+    <div className="app-container">
+      {/* Header */}
+      <header className="app-header">
+        <div className="app-header-inner">
+          <div className="app-logo">
+            <Dna className="app-logo-icon" size={32} />
+            <div className="app-logo-text">
+              <h1>Buscador de Variantes Germinativas</h1>
+              <span>Plataforma de Bioinformática Clínica</span>
+            </div>
+          </div>
+          <div className="app-header-actions">
+            <button
+              className={`btn btn-sm ${geminiApiKey ? 'btn-success' : 'btn-outline'}`}
+              onClick={() => setShowApiModal(true)}
+              title="Configurar chave da API do Gemini"
+              aria-label="Configurar API Key"
+            >
+              <Key size={14} />
+              {geminiApiKey ? 'API Configurada' : 'API Key'}
+            </button>
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              title={theme === 'light' ? 'Ativar tema escuro' : 'Ativar tema claro'}
+              aria-label={theme === 'light' ? 'Ativar tema escuro' : 'Ativar tema claro'}
+            >
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+          </div>
+        </div>
       </header>
 
-      <ApiKeyConfig apiKey={geminiApiKey} onSave={setGeminiApiKey} />
+      {/* Main Content */}
+      <main className="container">
+        {/* Hero */}
+        <section className="page-hero">
+          <h2>Análise de Variantes Genéticas</h2>
+          <p>
+            Pesquise por rsID ou HGVS, envie arquivos VCF para análise em lote, 
+            e gere laudos clínicos com inteligência artificial.
+          </p>
+        </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-        <div>
+        {/* Input Section */}
+        <section className="input-grid">
           <SearchBar onSearch={handleSearch} loading={loading} savedApiKey={geminiApiKey} />
-        </div>
-        <div>
           <VcfUploader onUpload={handleVcfUpload} loading={loading} />
-        </div>
-      </div>
+        </section>
 
-      {error && (
-        <div className="alert alert-danger" style={{ marginBottom: '2rem' }}>
-          <strong>Erro:</strong> {error}
-        </div>
-      )}
+        {/* Error Alert */}
+        {error && (
+          <div className="alert alert-danger" style={{ marginBottom: 'var(--space-xl)' }} role="alert">
+            <AlertTriangle size={18} className="alert-icon" />
+            <div>
+              <strong>Erro: </strong>{error}
+            </div>
+          </div>
+        )}
 
-      {variantData && <ClinicalDashboard data={variantData} />}
-      
-      {(loadingInsights || insights) && (
-        <GeminiAdvancedInsights insights={insights} loading={loadingInsights} />
-      )}
+        {/* Results */}
+        {variantData && <ClinicalDashboard data={variantData} />}
+        
+        {(loadingInsights || insights) && (
+          <GeminiAdvancedInsights insights={insights} loading={loadingInsights} />
+        )}
 
-      {vcfVariants.length > 0 && (
-        <VcfDashboard 
-          variants={vcfVariants} 
-          filename={vcfFilename}
-          onGenerateReport={handleGenerateReport} 
-          loadingReport={loadingReport} 
+        {vcfVariants.length > 0 && (
+          <VcfDashboard 
+            variants={vcfVariants} 
+            filename={vcfFilename}
+            onGenerateReport={handleGenerateReport} 
+            loadingReport={loadingReport} 
+          />
+        )}
+
+        {(loadingReport || report) && (
+          <AiClinicalReport report={report} loading={loadingReport} filename={vcfFilename} />
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="app-footer">
+        Buscador de Variantes Germinativas — Plataforma de Bioinformática Clínica
+      </footer>
+
+      {/* API Key Modal */}
+      {showApiModal && (
+        <ApiKeyConfig 
+          apiKey={geminiApiKey} 
+          onSave={handleApiKeySave} 
+          onClose={() => setShowApiModal(false)} 
         />
-      )}
-
-      {(loadingReport || report) && (
-        <AiClinicalReport report={report} loading={loadingReport} filename={vcfFilename} />
       )}
     </div>
   );

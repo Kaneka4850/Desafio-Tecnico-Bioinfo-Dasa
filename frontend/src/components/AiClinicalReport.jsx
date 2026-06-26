@@ -112,9 +112,9 @@ const AiClinicalReport = ({ report, loading, filename }) => {
   };
 
   return (
-    <div className="card" style={{ animation: 'fadeIn 0.5s', border: '1px solid var(--border-color)', marginTop: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-        <h2 className="card-title" style={{ color: 'var(--primary-color)', marginBottom: 0 }}>
+    <div className="card" style={{ marginTop: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
+        <h2 className="card-title" style={{ color: 'var(--color-primary)', marginBottom: 0 }}>
           <FileText size={24} />
           Laudo Clínico (Gerado por IA)
         </h2>
@@ -123,25 +123,13 @@ const AiClinicalReport = ({ report, loading, filename }) => {
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button 
               onClick={handleExportPDF} 
-              className="btn" 
-              style={{ 
-                backgroundColor: '#e74c3c', 
-                color: '#fff', 
-                padding: '0.5rem 1rem', 
-                fontSize: '0.875rem' 
-              }}
+              className="btn btn-outline"
             >
               <Download size={16} /> PDF
             </button>
             <button 
               onClick={handleExportWord} 
-              className="btn" 
-              style={{ 
-                backgroundColor: '#2b5797', 
-                color: '#fff', 
-                padding: '0.5rem 1rem', 
-                fontSize: '0.875rem' 
-              }}
+              className="btn btn-outline"
             >
               <Download size={16} /> Word
             </button>
@@ -152,20 +140,13 @@ const AiClinicalReport = ({ report, loading, filename }) => {
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem' }}>
           <div className="loader" style={{ width: '50px', height: '50px', borderWidth: '5px', marginBottom: '1.5rem' }}></div>
-          <p style={{ color: 'var(--primary-color)', fontWeight: 600, fontSize: '1.1rem' }}>
+          <p style={{ color: 'var(--color-primary)', fontWeight: 600, fontSize: '1.1rem' }}>
             A IA está analisando as variantes e redigindo o laudo clínico...
           </p>
         </div>
       ) : (
         <div ref={reportRef} className="markdown-content" style={{ marginTop: '1rem', lineHeight: '1.6' }}>
-          <div style={{ 
-            backgroundColor: '#fff3cd', 
-            color: '#856404', 
-            padding: '1rem', 
-            borderRadius: '8px', 
-            marginBottom: '2rem',
-            border: '1px solid #ffeeba'
-          }}>
+          <div className="alert alert-warning" style={{ marginBottom: '2rem' }}>
             <strong>⚠️ Aviso:</strong> Este é um laudo gerado automaticamente por Inteligência Artificial para fins de pesquisa. 
             Ele <strong>deve ser revisado por um profissional habilitado</strong> antes de qualquer uso clínico.
           </div>

@@ -11,7 +11,7 @@ def open_browser():
     """
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         # Redireciona para o servidor de dev do React
-        webbrowser.open_new('http://127.0.0.1:5173/')
+        webbrowser.open_new('http://localhost:5173/')
 
 if __name__ == "__main__":
     # Agenda a abertura do navegador para 1 segundo após iniciar o app

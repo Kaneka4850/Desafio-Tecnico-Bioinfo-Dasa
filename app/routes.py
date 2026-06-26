@@ -5,6 +5,7 @@ from app.services.ensembl_service import EnsemblService
 from app.services.gemini_service import GeminiService
 from app.services.omim_service import OmimService
 from app.services.cgi_service import CgiService
+from app.services.gnomad_service import GnomadService
 
 main = Blueprint('main', __name__)
 
@@ -43,6 +44,29 @@ def get_variant_json(variant_id):
         
         data["omim"] = omim_data
         data["cgi"] = cgi_data
+
+        # Integração gnomAD — frequências populacionais
+        alleles_str = data.get("alleles", "")
+        ref, alt = "", ""
+        if ">" in alleles_str:
+            parts = alleles_str.split(">")
+            ref = parts[0].strip()
+            alt = parts[1].strip().split("/")[0].strip()
+        
+        if ref and alt:
+            gnomad_data = GnomadService.get_variant_frequency(
+                chromosome=data.get("chromosome", ""),
+                position=data.get("position", 0),
+                ref=ref,
+                alt=alt,
+                dataset="gnomad_r4",  # Ensembl REST retorna coordenadas GRCh38
+            )
+            data["gnomad"] = gnomad_data
+            # Atualizar MAF se não disponível pelo Ensembl
+            if gnomad_data and (data.get("minor_allele_freq") is None):
+                data["minor_allele_freq"] = gnomad_data["global_af"]
+        else:
+            data["gnomad"] = None
         
         return jsonify(data), 200
     else:
@@ -124,6 +148,10 @@ def vcf_upload():
             return jsonify({"error": "Nenhuma variante encontrada no arquivo."}), 400
             
         results = EnsemblService.process_vcf_variants(variants)
+        
+        # Enriquecer variantes com dados do gnomAD
+        results = GnomadService.enrich_variants(results)
+        
         return jsonify({"variants": results, "filename": file.filename}), 200
 
     except Exception as e:

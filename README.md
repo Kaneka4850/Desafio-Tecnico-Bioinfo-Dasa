@@ -53,16 +53,15 @@ Além disso, conta com integração de **Inteligência Artificial (Google Gemini
 |---|---|
 | 🔍 **Busca por rsID / HGVS** | Consulta variantes individuais na API do Ensembl. |
 | 📁 **Upload de VCF/GVCF** | Envio de arquivos VCF com validação de extensão (front e backend). Limita a 50 variantes. |
-| 🌍 **Frequência Populacional** | Dados do gnomAD via Ensembl VEP (GRCh37/hg19). |
+| 🌍 **Frequência Populacional (gnomAD)** | Frequência alélica integrada nativamente via serviço próprio do gnomAD (r4/GRCh38 mapeado). |
 | 🧪 **Tipo de Mutação** | Missense, nonsense, frameshift, splice, intron variant, etc. |
-| 🏥 **Classificação Clínica** | Com sistema de cores: Patogênica (🔴), Prov. Patogênica (🟠), VUS (🟡), Benigna (🟢). |
+| 🏥 **Classificação Clínica** | Com sistema de cores padronizado: Patogênica (🔴), Prov. Patogênica (🟠), VUS (🟡), Benigna (🟢). |
 | 🧠 **IA - Insights Clínicos** | Gemini gera hipóteses diagnósticas, exames sugeridos e referências bibliográficas. |
 | 📄 **IA - Laudo Clínico** | Geração de laudo completo com Material, Resultados, Interpretação e Assinatura. |
 | 🔒 **Filtro de Tokens** | Apenas variantes Patogênicas, Prov. Patogênicas e VUS são enviadas à IA (economia de tokens). |
 | 📥 **Exportação PDF / Word** | Laudo exportável em PDF (via html2pdf.js) e Word (.docx via docx/file-saver). |
-| ⚙️ **Configuração de API Key** | Modal dedicado para configurar/editar a chave da API do Gemini a qualquer momento. |
-| 📅 **Data Automática** | O laudo inclui automaticamente a data e hora reais da geração. |
-| 📁 **Nome do Arquivo** | O nome do VCF enviado é salvo e incluído no cabeçalho do laudo. |
+| ⚙️ **Configuração de API Key** | Modal dedicado e seguro para configurar a chave da API do Gemini. |
+| 🌓 **Design System & Dark Mode** | Interface premium responsiva com suporte nativo e consistente a Temas Claro e Escuro. |
 
 ## 🛠 Arquitetura do Sistema
 
@@ -86,8 +85,9 @@ Desafio-Tecnico-Bioinfo-Dasa/
 │   └── services/                 # Serviços de integração
 │       ├── ensembl_service.py    # API Ensembl (Variation + VEP GRCh37)
 │       ├── gemini_service.py     # API Google Gemini (Insights + Laudo)
-│       ├── omim_service.py       # Stub para OMIM (futuro)
-│       └── cgi_service.py        # Stub para CGI (futuro)
+│       ├── gnomad_service.py     # API gnomAD (Frequências populacionais)
+│       ├── omim_service.py       # Integração OMIM
+│       └── cgi_service.py        # Integração CGI
 │
 └── frontend/                     # Frontend React (Vite)
     ├── package.json              # Dependências Node.js
@@ -95,7 +95,7 @@ Desafio-Tecnico-Bioinfo-Dasa/
     └── src/
         ├── main.jsx              # Ponto de entrada React
         ├── App.jsx               # Componente raiz (estado global)
-        ├── index.css             # Design System (CSS puro)
+        ├── index.css             # Design System Completo (CSS puro, tokens de cor)
         └── components/
             ├── SearchBar.jsx          # Barra de busca rsID/HGVS
             ├── ClinicalDashboard.jsx  # Exibição de variante individual
@@ -103,7 +103,7 @@ Desafio-Tecnico-Bioinfo-Dasa/
             ├── VcfUploader.jsx        # Upload de arquivo VCF
             ├── VcfDashboard.jsx       # Tabela de variantes com cores
             ├── AiClinicalReport.jsx   # Laudo IA + Exportação PDF/Word
-            └── ApiKeyConfig.jsx       # Modal de configuração da API Key
+            └── ApiKeyConfig.jsx       # Modal controlado de configuração da API Key
 ```
 
 ## 📦 Dependências e Tecnologias
