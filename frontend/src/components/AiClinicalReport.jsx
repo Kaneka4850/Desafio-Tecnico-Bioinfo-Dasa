@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { FileText, Download } from 'lucide-react';
+import { FileText, Download, AlertTriangle } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
@@ -42,7 +42,7 @@ const AiClinicalReport = ({ report, loading, filename }) => {
       new Paragraph({
         children: [
           new TextRun({
-            text: "AVISO: Este é um laudo gerado automaticamente por Inteligência Artificial para fins de pesquisa. Deve ser revisado por um profissional habilitado antes de qualquer uso clínico.",
+            text: "AVISO: Este é um laudo gerado automaticamente para fins de pesquisa. Deve ser revisado por um profissional habilitado antes de qualquer uso clínico.",
             bold: true,
             color: "856404",
             size: 20,
@@ -116,7 +116,7 @@ const AiClinicalReport = ({ report, loading, filename }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
         <h2 className="card-title" style={{ color: 'var(--color-primary)', marginBottom: 0 }}>
           <FileText size={24} />
-          Laudo Clínico (Gerado por IA)
+          Laudo Clínico
         </h2>
 
         {!loading && report && (
@@ -141,13 +141,13 @@ const AiClinicalReport = ({ report, loading, filename }) => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem' }}>
           <div className="loader" style={{ width: '50px', height: '50px', borderWidth: '5px', marginBottom: '1.5rem' }}></div>
           <p style={{ color: 'var(--color-primary)', fontWeight: 600, fontSize: '1.1rem' }}>
-            A IA está analisando as variantes e redigindo o laudo clínico...
+            Analisando variantes e redigindo o laudo clínico...
           </p>
         </div>
       ) : (
         <div ref={reportRef} className="markdown-content" style={{ marginTop: '1rem', lineHeight: '1.6' }}>
           <div className="alert alert-warning" style={{ marginBottom: '2rem' }}>
-            <strong>⚠️ Aviso:</strong> Este é um laudo gerado automaticamente por Inteligência Artificial para fins de pesquisa. 
+            <AlertTriangle size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '0.25rem' }} /><strong>Aviso:</strong> Este é um laudo gerado automaticamente para fins de pesquisa.
             Ele <strong>deve ser revisado por um profissional habilitado</strong> antes de qualquer uso clínico.
           </div>
           <ReactMarkdown>{report}</ReactMarkdown>

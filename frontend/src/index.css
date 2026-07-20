@@ -945,7 +945,7 @@ body {
   margin: var(--space-lg) 0;
 }
 
-/* --- AI Gradient Accent --- */
+/* --- Gradient Accent --- */
 .ai-accent {
   background: linear-gradient(135deg, var(--color-primary-subtle), rgba(8, 145, 178, 0.06));
   border: 1px solid var(--color-primary-light);

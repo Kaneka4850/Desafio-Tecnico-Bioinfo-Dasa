@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Info, FolderOpen } from 'lucide-react';
 
 const getClassificationStyle = (clinicalArray) => {
   if (!clinicalArray || clinicalArray.length === 0) return { badgeClass: 'badge badge-not-reported', label: 'Não Reportada', icon: <Info size={16} /> };
@@ -34,7 +34,7 @@ const VcfDashboard = ({ variants, filename, onGenerateReport, loadingReport }) =
           fontSize: '0.9rem',
           fontWeight: 500
         }}>
-          📁 Arquivo: <strong>{filename}</strong>
+          <FolderOpen size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '0.35rem' }} /> Arquivo: <strong>{filename}</strong>
         </div>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -44,7 +44,7 @@ const VcfDashboard = ({ variants, filename, onGenerateReport, loadingReport }) =
           onClick={onGenerateReport}
           disabled={loadingReport}
         >
-          {loadingReport ? 'Gerando Laudo...' : 'Gerar Laudo Clínico com IA'}
+          {loadingReport ? 'Gerando Laudo...' : 'Gerar Laudo Clínico'}
         </button>
       </div>
 

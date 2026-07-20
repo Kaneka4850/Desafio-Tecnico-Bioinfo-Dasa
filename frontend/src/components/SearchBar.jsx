@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sparkles } from 'lucide-react';
+import { Search, Zap } from 'lucide-react';
 
 const SearchBar = ({ onSearch, loading, savedApiKey }) => {
   const [query, setQuery] = useState('');
@@ -52,19 +52,19 @@ const SearchBar = ({ onSearch, loading, savedApiKey }) => {
           </div>
           <div className="toggle-label">
             <span className="toggle-label-title">
-              Busca Avançada com IA
-              <Sparkles size={14} color="var(--color-primary)" />
+              Busca Avançada
+              <Zap size={14} color="var(--color-primary)" />
             </span>
             <span className="toggle-label-description">
-              Gera insights clínicos utilizando o modelo Gemini com base na literatura médica.
+              Gera análises clínicas complementares com base na literatura médica.
             </span>
           </div>
         </div>
 
         {useGemini && !savedApiKey && (
           <div className="alert alert-warning" style={{ marginBottom: 'var(--space-md)' }}>
-            <Sparkles size={16} className="alert-icon" />
-            <span>Configure sua API Key clicando no botão <strong>"API Key"</strong> no cabeçalho.</span>
+            <Zap size={16} className="alert-icon" />
+            <span>Configure sua chave de acesso clicando no botão <strong>"Configurações"</strong> no cabeçalho.</span>
           </div>
         )}
 

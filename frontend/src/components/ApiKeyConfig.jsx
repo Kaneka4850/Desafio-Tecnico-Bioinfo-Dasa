@@ -18,10 +18,10 @@ const ApiKeyConfig = ({ apiKey, onSave, onClose }) => {
       <div className="modal-content">
         <h3 className="modal-title">
           <Settings size={20} color="var(--color-primary)" />
-          Configuração da API Key
+          Configuração de Acesso
         </h3>
         <p className="modal-description" style={{ marginBottom: '1.5rem' }}>
-          Insira sua chave da API do Google Gemini. Ela será usada para gerar insights clínicos e laudos.
+          Insira sua chave de acesso. Ela será utilizada para gerar análises clínicas e laudos.
         </p>
 
         <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
@@ -29,7 +29,7 @@ const ApiKeyConfig = ({ apiKey, onSave, onClose }) => {
             type={showKey ? 'text' : 'password'}
             value={tempKey}
             onChange={(e) => setTempKey(e.target.value)}
-            placeholder="Cole sua API Key aqui..."
+            placeholder="Cole sua chave de acesso aqui..."
             className="input-plain"
             style={{ paddingRight: '3rem' }}
           />

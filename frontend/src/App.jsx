@@ -142,7 +142,7 @@ function App() {
       if (err.response?.data?.error) {
         setError(`Erro ao gerar laudo: ${err.response.data.error}`);
       } else {
-        setError("Erro ao se comunicar com a IA para gerar o laudo.");
+        setError("Erro ao gerar o laudo. Tente novamente.");
       }
     } finally {
       setLoadingReport(false);
@@ -174,11 +174,11 @@ function App() {
             <button
               className={`btn btn-sm ${geminiApiKey ? 'btn-success' : 'btn-outline'}`}
               onClick={() => setShowApiModal(true)}
-              title="Configurar chave da API do Gemini"
+              title="Configurar chave de acesso"
               aria-label="Configurar API Key"
             >
               <Key size={14} />
-              {geminiApiKey ? 'API Configurada' : 'API Key'}
+              {geminiApiKey ? 'Acesso Configurado' : 'Configurações'}
             </button>
             <button
               className="theme-toggle"
@@ -198,8 +198,8 @@ function App() {
         <section className="page-hero">
           <h2>Análise de Variantes Genéticas</h2>
           <p>
-            Pesquise por rsID ou HGVS, envie arquivos VCF para análise em lote, 
-            e gere laudos clínicos com inteligência artificial.
+            Pesquise por rsID ou HGVS, envie arquivos VCF para análise em lote
+            e gere laudos clínicos automatizados.
           </p>
         </section>
 
@@ -242,7 +242,7 @@ function App() {
 
       {/* Footer */}
       <footer className="app-footer">
-        Buscador de Variantes Germinativas — Plataforma de Bioinformática Clínica
+        Buscador de Variantes Germinativas · Plataforma de Bioinformática Clínica
       </footer>
 
       {/* API Key Modal */}
